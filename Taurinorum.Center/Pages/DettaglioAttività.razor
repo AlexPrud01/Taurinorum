@@ -1,0 +1,351 @@
+﻿@* @* @* @page "/DettaglioAttività"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IJSRuntime JsRuntime
+@inject IWebHostEnvironment Environmen
+
+<div class="row" align="left">
+    <div class="col-4" align="left">
+        <h3>Attività</h3>
+        <br>
+    </div>
+    <div class="col-8" align="right">
+        <button onclick="@Salva" style="width : 40%" class="btn btn-site" >Salva</button>
+        <br>
+    </div>
+    <hr/>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Nome:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.Nome" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Descrizione:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.Descrizione" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Giorni
+                </label>
+            </div>
+            <div class="col-6">
+                <div class="column">
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Lunedi">Lun</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Martedi">Mar</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Mercoledi">Mer</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Giovedi">Gio</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Venerdi">Ven</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Sabato">Sab</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="attività.Domenica">Dom</label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Orario:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.Ora" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Tempo da impegare in minuti:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.TempoDaImpegare" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Data scadenza:
+                </label>
+            </div>
+            <div class="col-6">
+                <input type="date" @bind-value="attività.DataScadenza" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Numero persone:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.nPersone" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Via:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.Via" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Città:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="attività.Città" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <br>
+    
+    </div>
+
+    <div class="col-4" align="left">
+        <h5>Utente</h5>
+        <br>
+    </div>
+    <div class="col-8" align="right">
+        <button onclick="@AggiungiUtente" style="width : 40%" class="btn btn-site" >Aggiungi utente</button>
+        <br>
+    </div>
+    <hr/>
+    
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Seleziona utente da aggiungere:
+                </label>
+            </div>
+            <div class="col-6">
+                <select style="width:75%" @bind="IdUtenetSelezionato">
+                    <option value="0"> </option>
+                    @foreach (var utenti in listUtente)
+                    {
+                        <option value="@utenti.ID">@utenti.Nome @utenti.Cognome</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Giorni
+                </label>
+            </div>
+            <div class="col-6">
+                <div class="column">
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Lunedi">Lun</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Martedi">Mar</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Mercoledi">Mer</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Giovedi">Gio</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Venerdi">Ven</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Sabato">Sab</label>
+                    <label style="margin-left:4%"><input type="checkbox" @bind-value="utenteAttività.Domenica">Dom</label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>Paga speciale <input type="checkbox" @bind-value="pagaExtra"></label>
+            </div>
+            <div class="col-6">
+                <input type="number" @bind-value="pagaSpeciale" style="width:75%"/>
+            </div>
+        </div>
+    </div>
+            
+</div>
+<br>
+@* <table class="table table-sm">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Giorni</th>
+            <th>Paga</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attivitaSelezionata in listaAttivitàUtente)
+        {
+            <tr>
+                <td><a @onclick="() => Elimina(attivitaSelezionata.ID)" class="scritteRosse" target="_self">Elimina</a></td>
+                <td>@(restService.Utente_GetByID(attivitaSelezionata.IdUtente).Nome.ToString())</td>
+                <td>@(restService.Utente_GetByID(attivitaSelezionata.IdUtente).Cognome.ToString())</td>
+                <td>@personalizzaGiorniAttivita(attivitaSelezionata)</td>
+                <td>@attivitaSelezionata.Paga</td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+    
+
+@* @code {
+    
+    private AziendaDTO azienda = new AziendaDTO();
+    private RestService restService = new RestService();
+    private AttivitàDTO attività = new AttivitàDTO();
+    private List<UtenteGiornoAttivitàDTO> listaAttivitàUtente = new List<UtenteGiornoAttivitàDTO>();
+    private List<UtenteDTO> listUtente = new List<UtenteDTO>();
+    private UtenteGiornoAttivitàDTO utenteAttività = new UtenteGiornoAttivitàDTO();
+    private int IdUtenetSelezionato;
+    private decimal pagaSpeciale = 0;
+    private bool pagaExtra = false;
+    private string utenteAttivitaGiorno;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var ResultAttivita = await ProtectedSessionStore.GetAsync<int>("IdAttivita");
+        var ResultAzienda = await ProtectedSessionStore.GetAsync<int>("IdAzienda");
+        if (ResultAttivita.Value != 0)
+        {
+            attività = await restService.Attivita_GetByIdAsync(ResultAttivita.Value);
+            listaAttivitàUtente = await restService.UtenteGiornoAttività_List_GetByIDAttivita(attività.ID);
+        }
+        azienda = await restService.Azienda_GetByIdAsync(ResultAzienda.Value);
+        listUtente = await restService.Utente_GetListAsync(null);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            var Result = await ProtectedSessionStore.GetAsync<int>("IdUtente");
+        }
+        catch
+        {
+            NavManager.NavigateTo("");
+        }
+    }
+
+    public string personalizzaGiorniAttivita(UtenteGiornoAttivitàDTO utenteGiornoAttivita)
+    {
+        if(utenteGiornoAttivita.Lunedi == true)
+        {
+            utenteAttivitaGiorno = "Lun ";
+        }
+        if(utenteGiornoAttivita.Martedi == true)
+        {
+            utenteAttivitaGiorno += "Mar ";
+        }
+        if(utenteGiornoAttivita.Mercoledi == true)
+        {
+            utenteAttivitaGiorno += "Mer ";
+        }
+        if(utenteGiornoAttivita.Giovedi == true)
+        {
+            utenteAttivitaGiorno += "Gio ";
+        }
+        if(utenteGiornoAttivita.Venerdi == true)
+        {
+            utenteAttivitaGiorno += "Ven ";
+        }
+        if(utenteGiornoAttivita.Sabato == true)
+        {
+            utenteAttivitaGiorno += "Sab ";
+        }
+        if(utenteGiornoAttivita.Domenica == true)
+        {
+            utenteAttivitaGiorno += "Dom ";
+        }
+        return utenteAttivitaGiorno;
+    }
+
+    public async void Salva()
+    {
+        attività.IdAzienda = azienda.ID;
+        await restService.Attivita_SetAsync(attività);
+        messaggioAttivitaSalvata();
+    }
+
+    public async void AggiungiUtente()
+    {
+        if (attività.ID!= 0)
+        {
+            utenteAttività.IdUtente = IdUtenetSelezionato;
+            utenteAttività.IdAttività = attività.ID;
+            utenteAttività.Paga = (await restService.Utente_GetByIdAsync(IdUtenetSelezionato)).PagaOraria;
+            if (pagaExtra == true)
+            {
+                utenteAttività.Paga = pagaSpeciale;
+            }
+
+            if ((await restService.UtenteGiornoAttività_GetListAsync(null)).Any(x => x.IdAttività == attività.ID && x.IdUtente == IdUtenetSelezionato))
+            {
+                messaggioUtenteGiàSelezionato();
+            }
+            else
+            {
+                await restService.UtenteGiornoAttività_SetAsync(utenteAttività);
+                listaAttivitàUtente = await restService.UtenteGiornoAttività_List_GetByIDAttivita(attività.ID);
+                StateHasChanged();
+            }
+            utenteAttività = new UtenteGiornoAttivitàDTO();
+        }
+        else
+        {
+            messaggioPrimaCreaAttivita();
+        }
+    }
+
+    public async void Elimina(int ID)
+    {
+        await restService.UtenteGiornoAttività_DeleteAsync( (await restService.UtenteGiornoAttività_GetByIdAsync(ID)).ID);
+        listaAttivitàUtente = await restService.UtenteGiornoAttività_List_GetByIDAttivita(attività.ID);
+        StateHasChanged();
+    }
+    
+    private async Task messaggioUtenteGiàSelezionato()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Utente già inserito per questa attività, OK"); 
+    }
+
+    private async Task messaggioUtenteInseritoCorrettamente()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Utente inserito correttamente, OK"); 
+    }
+    
+    private async Task messaggioPrimaCreaAttivita()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Prima crea l'attività, OK"); 
+    }
+    
+    private async Task messaggioAttivitaSalvata()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Attività salvata correttamente, OK"); 
+    }
+
+} *@ 

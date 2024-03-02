@@ -1,0 +1,127 @@
+﻿@page "/Timbrature"
+@using Blazored.Typeahead
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.FilterModel
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<PageTitle>Timbrature</PageTitle>
+<div class="row">
+    <div class="col-12">
+        <h1>Timbrature</h1>
+    </div>
+    <br>
+    <div class="col-9 row" style="text-align:center">
+        @if (utente.Admin)
+        {
+            <div class="col-12 row">
+                <label style="width:150px">Utente:</label>
+                <div class="col">
+                    <BlazoredTypeahead class="col" Context="Utente" SearchMethod="CercaUtente" @bind-Value="utenteRicercaDTO" MinimumLength="3">
+                        <SelectedTemplate>
+                            @Utente.Nome
+                        </SelectedTemplate>
+                        <ResultTemplate>  @Utente.Nome</ResultTemplate>
+                        <NotFoundTemplate>
+                            Nessun risultato trovato
+                        </NotFoundTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+        }
+        @if (visualizzaMese)
+        {
+            <div class="col-4" style="align-items:center">
+                <label>Visualizza Mensilita:</label>
+                <InputCheckbox @bind-Value="visualizzaMese" />
+            </div>
+
+            <div class="col-4" style="align-items:center">
+                <label>Anno:</label>
+                <InputSelect class="col" @bind-Value="@annoSelezionato">
+                    @for (int i = DateTime.Now.Year; i>(DateTime.Now.Year - 100); i--)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="col-4" style="align-items:center">
+                <label>Mese:</label>
+                <InputSelect class="col" @bind-Value="@meseSelezionato">
+                    @foreach (var mese in Enum.GetValues(typeof(MeseEnum)))
+                    {
+                        <option value="@mese">@mese.ToString()</option>
+                    }
+                </InputSelect>
+            </div>
+        }
+        else
+        {
+            <div class="col-4" style="align-items:center">
+                <label>Visualizza Mese:</label>
+                <InputCheckbox class="col" @bind-Value="visualizzaMese" />
+            </div>
+            <div class="col-4">
+                <label>Da Data:</label>
+                <InputDate class="col" @bind-Value="timbraFM.DaData" />
+            </div>
+            <div class="col-4">
+                <label>A Data:</label>
+                <InputDate class="col" @bind-Value="timbraFM.AData" />
+            </div>
+        }
+    </div>
+    <div class="col-3">
+        <div class="col-12">
+            <button class="btn btn-site" style="width:100%" onclick="@Cerca">Cerca</button>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-site" style="width:100%; margin-top: 10px;" onclick="@StampaExcel">Stampa Excel</button>
+        </div>
+    </div>
+</div>
+
+<br>
+
+@if (timbraFM.IDUtente != null && timbraFM.IDUtente != 0)
+{
+
+    <br>
+
+    <h2>Ore effettuate: @TotaleOre.@TotaleMinuti </h2>
+
+    <br>
+}
+
+@if (ListUtenteTimbratureDTO != null)
+{
+    <table class="table table-responsive" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center;">Cognome</th>
+                <th style="text-align: center;">Nome</th>
+                <th style="text-align: center;">Data Entrata</th>
+                <th style="text-align: center;">Data Uscita</th>
+                <th style="text-align: center;">Ore</th>
+                <th style="text-align: center;">Posizione Entrata</th>
+                <th style="text-align: center;">Posizione Uscita</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var UtenteTimbratura in ListUtenteTimbratureDTO)
+            {
+                <tr>
+                    <td style="text-align: center;">@ListUtenteDTO.Where(x => x.ID == UtenteTimbratura.IDUtente).FirstOrDefault().Cognome</td>
+                    <td style="text-align: center;">@ListUtenteDTO.Where(x => x.ID == UtenteTimbratura.IDUtente).FirstOrDefault().Nome</td>
+                    <td style="text-align: center;">@UtenteTimbratura.DataOraEntrata</td>
+                    <td style="text-align: center;">@UtenteTimbratura.DataOraUscita</td>
+                    <td style="text-align: center;">@tabOre(UtenteTimbratura.TotaleOre)</td>
+                    <td style="text-align: center;"><button @onclick="() => Posizione(UtenteTimbratura.LongitudineEntrata, UtenteTimbratura.LatitudineEntrata)" class="btn btn-site" style="border-width:0px; background-color:white" target="_self">Visualizza</button></td>
+                    <td style="text-align: center;"><button @onclick="() => Posizione(UtenteTimbratura.LongitudineUscita, UtenteTimbratura.LatitudineUscita)" class="btn btn-site" style="border-width:0px; background-color:white" target="_self">Visualizza</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

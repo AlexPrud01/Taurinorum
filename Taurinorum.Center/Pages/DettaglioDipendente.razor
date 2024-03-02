@@ -1,0 +1,122 @@
+﻿@* @page "/DettaglioDipendente"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.FilterModel
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<div class="row" align="left">
+    <div class="col-4" align="left">
+        <h3>Dipendente</h3>
+        <br>
+    </div>
+    <div class="col-8" align="right">
+        <br>
+        <button @onclick="() => Salva()" style="width : 40%" class="btn btn-site" >Salva</button>
+    </div>
+    <h5>Anagrafica</h5>
+    <hr/>
+    <div class="row" >
+        <div class="col-8">
+            <div class="row">
+                <div class="col-3">
+                    <label>
+                        Nome:
+                    </label>
+                </div>
+                <div class="col-6">
+                    <input @bind-value="utente.Nome" style="width:100%"/>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-3">
+                    <label>
+                        Cognome:
+                    </label>
+                </div>
+                <div class="col-6">
+                    <input @bind-value="utente.Cognome" style="width:100%"/>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
+    
+    <h5>Contratto</h5>
+    <hr/>
+    <div class="col-8">
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Tipo contratto:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="utente.TipoContratto" style="width:100%"/>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <div class="col-3">
+                <label>
+                    Paga oraria:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="utente.PagaOraria" style="width:100%"/>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <div class="col-3">
+                <label>
+                    Numero ore lavorative settimanali:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="utente.NumeroOreLavorativeSettimanali" style="width:100%"/>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <div class="col-3">
+                <label>
+                    Numero ore lavorative extra:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="utente.NumeroOreLavorativeExtra" style="width:100%"/>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
+    <h5>Utente</h5>
+    <hr/>
+    <div class="col-8">
+        <div class="form-group row">
+                <div class="col-3">
+                    <label>
+                        Username:
+                    </label>
+                </div>
+                <div class="col-6">
+                    <input @bind-value="utente.Username" style="width:100%"/>
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>
+                        Password:
+                    </label>
+                </div>
+                <div class="col-6">
+                <input @bind-value="utente.Password" style="width:100%"/>
+            </div>
+        </div>
+    </div>
+</div>
+ *@

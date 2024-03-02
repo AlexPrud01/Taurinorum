@@ -1,0 +1,105 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.Enumeration
+@using Blazored.Typeahead
+@inherits InputBase<string>
+
+<div class="row" style="margin-bottom:10px; vertical-align:central">
+    @if (!dentroFormBase)
+    {
+        <label style="width: @WidthCampo1">@GetEnumDisplayName(Pagina)</label>
+    }
+    <div style="width:@WidthCampo2">
+        <label style="width:100%; border: 1px solid black; padding: 5px; border-radius: 10px; height:35px">@lookupDTO.Codice</label>
+    </div>
+    <button class="btn btn-site" style="width:80px; height:40px" onclick="@ApriModale">Cerca</button>
+</div>
+
+@if (Modale_IsOpen)
+{
+    <Modale PaginaApertura="Pagina" OnClose="ChiudiModale"/>
+}
+
+@code {
+
+    [Parameter]
+    public string WidthCampo1 { get; set; } = "200px";
+    [Parameter]
+    public string WidthCampo2 { get; set; } = "400px";
+    [Parameter]
+    public bool dentroFormBase { get; set; } = false;
+    [Parameter]
+    public EPagina Pagina { get; set; } = EPagina.Generica;
+    RestService restService = new RestService();
+    LookupDTO lookupDTO = new LookupDTO();
+    bool Modale_IsOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (lookupDTO == new LookupDTO())
+            await RiempiCampi();
+    }
+
+    private async Task RiempiCampi()
+    {
+        if (CurrentValue != null && CurrentValue != "0" && CurrentValue != "")
+        {
+            switch (Pagina)
+            {
+                case EPagina.AttivitaCeduta:
+                    var AttivitaCeduta = await restService.Attività_GetByIdAsync(Convert.ToInt32(CurrentValue));
+                    lookupDTO = new LookupDTO() { ID = AttivitaCeduta.ID, Codice = AttivitaCeduta.Codice };
+                    break;
+                case EPagina.Cliente:
+                    var Cliente = await restService.Cliente_GetByIdAsync(Convert.ToInt32(CurrentValue));
+                    lookupDTO = new LookupDTO() { ID = Cliente.ID, Codice = Cliente.Codice };
+                    break;
+                case EPagina.Fornitore:
+                    var Fornitore = await restService.Fornitore_GetByIdAsync(Convert.ToInt32(CurrentValue));
+                    lookupDTO = new LookupDTO() { ID = Fornitore.ID, Codice = Fornitore.Codice };
+                    break;
+                case EPagina.Iva:
+                    var Iva = await restService.Iva_GetByIdAsync(Convert.ToInt32(CurrentValue));
+                    lookupDTO = new LookupDTO() { ID = Iva.ID, Codice = Iva.Codice };
+                    break;
+                case EPagina.ModalitaPagamento:
+                    var ModalitaPagamento = await restService.ModalitaPagamento_GetByIdAsync(Convert.ToInt32(CurrentValue));
+                    lookupDTO = new LookupDTO() { ID = ModalitaPagamento.ID, Codice = ModalitaPagamento.Codice };
+                    break;
+            }
+            StateHasChanged();
+        }
+    }
+
+
+    protected async Task ApriModale()
+    {
+        Modale_IsOpen = true;
+    }
+    protected virtual async Task ChiudiModale(string ID)
+    {
+        CurrentValue = ID;
+        await RiempiCampi();
+        Modale_IsOpen = false;
+    }
+
+    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    static string GetEnumDisplayName(Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var displayAttribute = (DisplayAttribute)Attribute.GetCustomAttribute(field, typeof(DisplayAttribute));
+
+        return displayAttribute?.Name ?? value.ToString();
+    }
+}

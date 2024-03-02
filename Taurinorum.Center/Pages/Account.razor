@@ -1,0 +1,235 @@
+﻿@page "/Account"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IJSRuntime JsRuntime
+@inject IWebHostEnvironment Environment
+
+<h1 align="center">Benvenuto @utente.Nome @utente.Cognome</h1>
+
+<br>
+<br>
+
+<div class="row" align="left">
+
+    <div class="col-8" align="left">
+        <div class="col-12" align="left">
+            <label>Nome</label>
+        </div>
+    
+        <div class="col-12" align="left">
+            <label>@utente.Nome</label>
+        </div>
+            
+            
+        <br>
+        <br>
+    
+            
+        <div class="col-12" align="left">
+            <label>Cognome</label>
+        </div>
+    
+        <div class="col-12" align="left">
+            <label>@utente.Cognome</label>
+        </div>
+            
+            
+        <br>
+        <br>
+    
+            
+        <div class="col-12" align="left">
+            <label>Username</label>
+        </div>
+    
+        <div class="col-12" align="left">
+            <label>@utente.Username</label>
+        </div>
+
+    </div>
+    
+    
+</div>
+
+<br>
+<br>
+    
+    <div class="row" align="left">
+
+    <div class="col-6" align="left">
+        <button style="width:100%;" class="btn btn-site" @onclick="VisualizzaSettimana">Visualizza settimana lavorativa</button>
+    </div>
+    
+    <div class="col-6" align="left">
+        <button style="width:100%;" class="btn btn-site" @onclick="VisualizzaOreEffettuateMese">Visualizza ore lavorate</button>
+    </div>
+
+</div>
+
+<br>
+<br>
+
+<div class="row" align="left">
+        
+    @if(visualizzaOreLavorate == true)
+    {
+        <div class="col-12" align="left">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Azienda</th>
+                        <th>Attività</th>
+                        <th>Data Inizio</th>
+                        <th>Data Fine</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var attivitaSelezionata in listCompilaOre)
+                    {
+                        <tr>
+                            <td>@attivitaSelezionata.Azienda</td>
+                            <td>@attivitaSelezionata.Attività</td>
+                            <td>@attivitaSelezionata.DataOraInizio</td>
+                            <td>@attivitaSelezionata.DataOraFine</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+        
+    @* @if (visualizzaSettimana == true)
+    {
+        <div class="col-12">
+
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Lunedi</th>
+                        <th>Martedi</th>
+                        <th>Mercoledi</th>
+                        <th>Giovedi</th>
+                        <th>Venerdi</th>
+                        <th>Sabato</th>
+                        <th>Domenica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var utenteAttività in utenteAttività)
+                    {
+                        <tr>
+                            <td>@if(utenteAttività.Lunedi == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>
+                                }
+                            </td>
+                            <td>@if(utenteAttività.Martedi == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>}
+                            </td>
+                            <td>@if(utenteAttività.Mercoledi == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>}
+                            </td>
+                            <td>@if(utenteAttività.Giovedi == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>}
+                            </td>
+                            <td>@if(utenteAttività.Venerdi == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>}
+                            </td>
+                            <td>@if(utenteAttività.Sabato == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>}
+                            </td>
+                            <td>@if(utenteAttività.Domenica == true)
+                                {
+                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                <br>
+                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                <br>
+                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                <br>
+                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                <br>
+                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                <br>
+                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                <hr/>}
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    } *@
+</div>

@@ -1,0 +1,51 @@
+﻿@* @page "/Dipendenti"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+<h3>Dipendenti</h3>
+
+<br>
+
+<div class="row" align="left">
+    <div class="col-4" align="left">
+        <b>Numero Dipendenti: @NumeroDipendenti</b>
+    </div>
+    <div class="col-8" align="right">
+        <button @onclick="() => DettaglioDipendente(0)" style="width : 40%" class="btn btn-site" >Nuovo Dipendente</button>
+    </div>
+
+    <div style="overflow-y:scroll; overflow-x:hidden; height:720px;">
+        <br>
+        <br>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tipo contratto</th>
+                    <th>Numero ore lavorative mensili</th>
+                    <th>Numero ore lavorative extra</th>
+                    <th>Paga orario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var utenteSelezionato in listUtente)
+                {
+                    <tr>
+                        <td><a @onclick="() => DettaglioDipendente(utenteSelezionato.ID)" class="scritteRosse" target="_self">Modifica</a></td>
+                        <td>@utenteSelezionato.Nome</td>
+                        <td>@utenteSelezionato.Cognome</td>
+                        <td>@utenteSelezionato.TipoContratto</td>
+                        <td>@utenteSelezionato.NumeroOreLavorativeSettimanali</td>
+                        <td>@utenteSelezionato.NumeroOreLavorativeExtra</td>
+                        <td>@utenteSelezionato.PagaOraria</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+ *@

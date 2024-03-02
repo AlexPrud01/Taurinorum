@@ -1,0 +1,693 @@
+﻿@page "/VisualizzaOrari"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IJSRuntime JsRuntime
+@inject IWebHostEnvironment Environmen
+
+
+<div class="row" align="left">
+    <div class="col-4" align="left">
+        <h3>Visualizza Orari</h3>
+        <br>
+    </div>
+    @if (chiVisualizzare == "Azienda")
+    {
+        <div class="col-sm-8" style="text-align:right; padding-right:20px;">
+            <div class="row col-sm-12">
+                <div class="col-sm-1" style="text-align:right; padding-right:20px;">
+                    <b><label>Legenda:</label></b>
+                </div>
+                <div class="col-sm-7" style="text-align:right; padding-right:20px;">
+                    <ul class="legend" style="font-size:17px;">
+                        <li><span class="verde"></span> Assegnato</li>
+                        <li><span class="arancione"></span> Finire Assegnazione</li>
+                        <li><span class="rosso"></span> Non Assegnato</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+    <hr />
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    <div class="row">
+                        <div class="col-4">
+                            <label>
+                                Visualizza
+                            </label>
+                        </div>
+                        <div class="col-8">
+                            <label>
+                                <input name="CheckVisualizzazione" type="radio"
+                                       value="@stringaUtente"
+                                       checked="@(chiVisualizzare == "Dipendente")"
+                                       @onchange="@ModificaVisualizzazione">
+                                Dipendenti
+                                &nbsp
+                            </label>
+                            <label>
+                                <input name="CheckVisualizzazione" type="radio"
+                                       value="@stringaAzienda"
+                                       checked="@(chiVisualizzare == "Azienda")"
+                                       @onchange="@ModificaVisualizzazione">
+                                Azienda
+                            </label>
+                        </div>
+                        <div class="col-4">
+                        </div>
+                        <div class="col-8">
+                            @if (chiVisualizzare == "Utente")
+                            {
+                                <label>
+                                    <input name="CheckVisualizzazioneOre" type="radio"
+                                           value="@stringaCompilate"
+                                           checked="@(chiVisualizzare2 == "Compilate")"
+                                           @onchange="@ModificaVisualizzazione2">
+                                    Compilate
+                                    &nbsp
+                                </label>
+                                <label>
+                                    <input name="CheckVisualizzazioneOre" type="radio"
+                                           value="@stringaSchedario"
+                                           checked="@(chiVisualizzare2 == "Schedario")"
+                                           @onchange="@ModificaVisualizzazione2">
+                                    Schedario
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+                </label>
+            </div>
+            @if (chiVisualizzare == "Azienda")
+            {
+                <div class="col-7">
+                    <select style="width:75%" @onchange="cercaAzienda">
+                        <option value="0"> </option>
+                        @foreach (var azienda in ListAzienda)
+                        {
+                            <option value="@azienda.ID">@azienda.Nome</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-1">
+                    <a id="btnGenerate" class="btn btn-site" href="../@IdAziendaSelezionata/@chiVisualizzare/Azienda" style="width : 100%" target="_blank">Stampa</a>
+                </div>
+                <div class="col-1">
+                    <button @onclick="() => Cerca()" style="width : 100%" class="btn btn-site">Cerca</button>
+                </div>
+
+
+                <br>
+
+                <br>
+
+                <br>
+
+                <div class="col-12">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Lunedi</th>
+                                <th>Martedi</th>
+                                <th>Mercoledi</th>
+                                <th>Giovedi</th>
+                                <th>Venerdi</th>
+                                <th>Sabato</th>
+                                <th>Domenica</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @* @foreach (var ListAttivita in ListAttività)
+                            {
+                                <tr>
+                                    <td>@ListAttivita.Nome</td>
+                                    @if (ListAttivita.Lunedi == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Lunedi == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Lunedi == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Lunedi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Lunedi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Lunedi == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                    @if (ListAttivita.Martedi == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Martedi == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Martedi == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Martedi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Martedi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Martedi == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                    @if (ListAttivita.Mercoledi == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Mercoledi == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Mercoledi == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Mercoledi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Mercoledi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Mercoledi == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                    @if (ListAttivita.Giovedi == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Giovedi == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Giovedi == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Giovedi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Giovedi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Giovedi == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                    @if (ListAttivita.Venerdi == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Venerdi == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Venerdi == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Venerdi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Venerdi == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Venerdi == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                    @if (ListAttivita.Sabato == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Sabato == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Sabato == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Sabato == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Sabato == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Sabato == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                    @if (ListAttivita.Domenica == true)
+                                    {
+                                        if (restService.UtenteGiornoAttività_List().Any(x => x.IdAttività == ListAttivita.ID && x.Domenica == true))
+                                        {
+                                            if (restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Domenica == true) == ListAttivita.nPersone)
+                                            {
+                                                <td style="background-color:green">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Domenica == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="background-color:orange">
+                                                    @foreach (var ListaDipendentiCheLavorano in restService.UtenteGiornoAttività_List().Where(x => x.IdAttività == ListAttivita.ID && x.Domenica == true).ToList())
+                                                    {
+                                                        <label>@ListaDipendentiCheLavorano.utente.Nome &nbsp @ListaDipendentiCheLavorano.utente.Cognome</label>
+                                                        <br>
+                                                    }
+                                                    <label>MANCANO @(ListAttivita.nPersone - restService.UtenteGiornoAttività_List().Count(x => x.IdAttività == ListAttivita.ID && x.Domenica == true)) DIPENDENTI</label>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td style="background-color:red"></td>
+                                        }
+                                    }
+                                </tr>
+                            } *@
+                        </tbody>
+                    </table>
+                </div>
+            }
+            @if (chiVisualizzare == "Utente")
+            {
+                <div class="col-7">
+                    <select style="width:75%" @onchange="cercaUtente">
+                        <option value="0"> </option>
+                        @foreach (var utente in ListUtenti)
+                        {
+                            <option value="@utente.ID">@utente.Nome</option>
+                        }
+                    </select>
+                </div>
+
+
+                @if (chiVisualizzare2 == "Compilate")
+                {
+                    <div class="col-1">
+                        <a id="btnGenerate" class="btn btn-site" href="../@IdUtenteSelezionato/@chiVisualizzare/@chiVisualizzare2" style="width : 100%" target="_blank">Stampa</a>
+                    </div>
+                    <div class="col-1">
+                        <button @onclick="() => Cerca()" style="width : 100%" class="btn btn-site">Cerca</button>
+                    </div>
+
+
+                    <br>
+
+                    <br>
+
+                    <br>
+
+                    <div class="col-12">
+
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Azienda</th>
+                                    <th>Attività</th>
+                                    <th>Data Inizio</th>
+                                    <th>Data Fine</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var attivitaSelezionata in listCompilaOre)
+                                {
+                                    <tr>
+                                        <td>@attivitaSelezionata.Azienda</td>
+                                        <td>@attivitaSelezionata.Attività</td>
+                                        <td>@attivitaSelezionata.DataOraInizio</td>
+                                        <td>@attivitaSelezionata.DataOraFine</td>
+                                        <td><button @onclick="() => Elimina(attivitaSelezionata.ID)" style="width : 100%" class="btn btn-site">Elimina</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (chiVisualizzare2 == "Schedario")
+                {
+                    <div class="col-1">
+                        <a id="btnGenerate" class="btn btn-site" href="../@IdUtenteSelezionato/@chiVisualizzare/@chiVisualizzare2" style="width : 100%" target="_blank">Stampa</a>
+                    </div>
+                    <div class="col-1">
+                        <button @onclick="() => Cerca()" style="width : 100%" class="btn btn-site">Cerca</button>
+                    </div>
+
+
+                    <br>
+
+                    <br>
+
+                    <br>
+
+                    @* <div class="col-12">
+
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Lunedi</th>
+                                    <th>Martedi</th>
+                                    <th>Mercoledi</th>
+                                    <th>Giovedi</th>
+                                    <th>Venerdi</th>
+                                    <th>Sabato</th>
+                                    <th>Domenica</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var utenteAttività in utenteAttività)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (utenteAttività.Lunedi == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (utenteAttività.Martedi == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (utenteAttività.Mercoledi == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (utenteAttività.Giovedi == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (utenteAttività.Venerdi == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (utenteAttività.Sabato == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (utenteAttività.Domenica == true)
+                                            {
+                                                <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                                <br>
+                                                <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                                <br>
+                                                <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                                <br>
+                                                <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                                <br>
+                                                <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                                <br>
+                                                <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                                <hr />
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div> *@
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+
+@code {
+    string chiVisualizzare = "";
+    string chiVisualizzare2 = "";
+    string stringaUtente = "Utente";
+    string stringaAzienda = "Azienda";
+    string stringaSchedario = "Schedario";
+    string stringaCompilate = "Compilate";
+    private List<AziendaDTO> ListAzienda = new List<AziendaDTO>();
+    private List<UtenteDTO> ListUtenti = new List<UtenteDTO>();
+    private List<AttivitàDTO> ListAttività = new List<AttivitàDTO>();
+    private RestService restService = new RestService();
+    private List<CompilazioneOreDTO> listCompilaOre = new List<CompilazioneOreDTO>();
+    private int IdUtenteSelezionato;
+    private int IdAziendaSelezionata;
+
+    private List<AttivitàDTO> ListAttivitàDaEseguire = new List<AttivitàDTO>();
+    private int attivitaSelezione;
+
+
+
+    private List<UtenteGiornoAttivitàDTO> utenteAttività = new List<UtenteGiornoAttivitàDTO>();
+    private UtenteDTO utente = new UtenteDTO();
+    private UtenteGiornoAttivitàDTO attivitaUtente = new UtenteGiornoAttivitàDTO();
+    private UtenteGiornoAttivitàDTO utenteGiorno;
+    private string utenteSelezionato;
+    private bool pagaExtra = false;
+    private double pagaSpeciale;
+    private AttivitàDTO nuovaAttivita = new AttivitàDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListAzienda = await restService.Azienda_GetListAsync(null);
+        ListUtenti = await restService.Utente_GetListAsync(null);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            var ResultUtente = await ProtectedSessionStore.GetAsync<int>("IdUtente");
+        }
+        catch
+        {
+            NavManager.NavigateTo("");
+        }
+    }
+
+    private void ModificaVisualizzazione(ChangeEventArgs e)
+    {
+        chiVisualizzare = e.Value.ToString();
+    }
+
+    private void ModificaVisualizzazione2(ChangeEventArgs e)
+    {
+        chiVisualizzare2 = e.Value.ToString();
+    }
+
+    private async void Cerca()
+    {
+        // if (chiVisualizzare == "Azienda")
+        // {
+        //     ListAttività = await restService.Attività_List_GetByIDAzienda(IdAziendaSelezionata);
+        // }
+        if (chiVisualizzare == "Utente")
+        {
+            // if (chiVisualizzare2 == "Compilate")
+            // {
+            //     listCompilaOre = await restService.CompilazioneOre_List_GetByIDUtente(IdUtenteSelezionato);
+            // }
+            if (chiVisualizzare2 == "Schedario")
+            {
+                utenteAttività = await restService.UtenteGiornoAttività_List_GetByIDUtente(IdUtenteSelezionato);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void cercaUtente(ChangeEventArgs e)
+    {
+        IdUtenteSelezionato = 0;
+        utenteAttività = new List<UtenteGiornoAttivitàDTO>();
+        IdUtenteSelezionato = Convert.ToInt32(e.Value.ToString());
+    }
+
+    private void cercaAzienda(ChangeEventArgs e)
+    {
+        IdAziendaSelezionata = 0;
+        ListAttività = new List<AttivitàDTO>();
+        IdAziendaSelezionata = Convert.ToInt32(e.Value.ToString());
+    }
+
+    private async void Elimina(int ID)
+    {
+        try
+        {
+            CompilazioneOreDTO compilazioneDaEliminare = await restService.CompilazioneOre_GetByIdAsync(ID);
+            await restService.CompilazioneOre_DeleteAsync(compilazioneDaEliminare.ID);
+            messaggioAttivitaEliminata();
+            Cerca();
+        }
+        catch
+        {
+            messaggioAttivitaNonEliminata();
+        }
+
+    }
+
+    private async Task messaggioAttivitaEliminata()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("Conferma", "Attività eliminata correttamente, OK");
+    }
+
+    private async Task messaggioAttivitaNonEliminata()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("Errore", "Attività eliminata non correttamente, OK");
+    }
+
+}

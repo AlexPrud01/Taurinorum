@@ -1,0 +1,34 @@
+﻿@inherits BasePage
+
+<PageTitle>@GetEnumDisplayName(Pagina)</PageTitle>
+@if (utente.Admin || SelezionaDett)
+{
+    <div class="row">
+        @if (Messaggio)
+        {
+            <AllertComponent allert="@Allert" />
+        }
+        <div class="col-12">
+            <h1 style="text-align:left; vertical-align:central">@GetEnumDisplayName(Pagina)</h1>
+        </div>
+        <div class="col-6">
+        </div>
+        <div class="col-3">
+            <button class="btn btn-site" style="width:100%" onclick="@Nuovo">Nuovo</button>
+        </div>
+        <div class="col-3">
+            <button class="btn btn-site" style="width:100%" onclick="@Cerca">Cerca</button>
+            <br><br>
+        </div>
+    </div>
+    @if (Modale_IsOpen)
+    {
+        <Modale PaginaApertura="PaginaDaAprire" ID="IDSelezionato" OnClose="ChiudiModale"/>
+    }
+    else
+    {
+        @Childcontent
+    }
+}
+
+<ResizeHandlerHeight @bind-Value="LunghezzaModale" />

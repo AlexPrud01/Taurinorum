@@ -1,0 +1,673 @@
+﻿@* @page "/GestioneOrari"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IJSRuntime JsRuntime
+@inject IWebHostEnvironment Environmen
+
+
+<div class="row" align="left">
+    <div class="col-4" align="left">
+        <h3>Gestione Orari</h3>
+        <br>
+    </div>
+    <hr/>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-5">
+                <label>
+                    Seleziona azienda:
+                </label>
+            </div>
+            <div class="col-7">
+                <select style="width:75%" @onchange="cercaAttivita">
+                    <option value="0"> </option>
+                    @foreach (var azienda in ListAzienda)
+                    {
+                        <option value="@azienda.ID">@azienda.Nome</option>
+                    }
+                </select>
+            </div>
+            <br><br><br>
+            <div class="col-12">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Giorno</th>
+                            <th>Tempo da impiegare</th>
+                            <th>Minuti</th>
+                            <th>Persone</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var attivitaSelezionata in ListAttivitàDaEseguire)
+                        {
+                            <tr>
+                                <td>@attivitaSelezionata.Nome</td>
+                                <td>@giornoIntervento(attivitaSelezionata)</td>
+                                <td>@attivitaSelezionata.Ora</td>
+                                <td>@attivitaSelezionata.TempoDaImpegare</td>
+                                @* <td>@attivitaSelezionata.nPersone / @restService.Attivita_GetByIdAsync(attivitaSelezionata.ID).nPersone</td> *@
+@*                                 @if(attivitaSelezione != attivitaSelezionata)
+                                {  
+                                    <td><button @onclick="() => SelezionaAttivita(attivitaSelezionata)" style="width : 80%; background-color:red !important" class="btn btn-site" >Seleziona</button></td>
+                                }
+                                else
+                                {
+                                    <td><button @onclick="() => SelezionaAttivita()" style="width : 80%; background-color:green !important" class="btn btn-site" >Deseleziona</button></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-2">
+                        <label>
+                            Seleziona utente:
+                        </label>
+                    </div>
+                    <div class="col-4">
+                        <select style="width:75%" @onchange="cercaUtente">
+                            <option value="0"> </option>
+                            @foreach (var utente in ListUtenti)
+                            {
+                                <option value="@utente.ID">@utente.Nome</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <label>Paga Speciale  <input type="checkbox" @bind-value="pagaExtra"></label>
+                    </div>
+                    <div class="col-4">
+                        <input @bind-value="pagaSpeciale" style="width:75%"/>
+                    </div>
+                </div>
+            </div>
+            <br><br><br> *@
+            @* <div class="col-12">
+
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Lunedi</th>
+                            <th>Martedi</th>
+                            <th>Mercoledi</th>
+                            <th>Giovedi</th>
+                            <th>Venerdi</th>
+                            <th>Sabato</th>
+                            <th>Domenica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var utenteAttività in utenteAttività)
+                        {
+                            <tr>
+                                <td>@if(utenteAttività.Lunedi == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Lunedi)" style="width : 100%" class="btn btn-site" >Elimina</button>
+                                    <hr/>
+                                    }
+                                </td>
+                                <td>@if(utenteAttività.Martedi == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Martedi)" style="width : 100%" class="btn btn-site" >Elimina</button>
+                                    <hr/>}
+                                </td>
+                                <td>@if(utenteAttività.Mercoledi == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Mercoledi)" style="width : 100%" class="btn btn-site" >Elimina</button>
+                                    <hr/>}
+                                </td>
+                                <td>@if(utenteAttività.Giovedi == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Giovedi)" style="width : 100%" class="btn btn-site" >Elimina</button>
+                                    <hr/>}
+                                </td>
+                                <td>@if(utenteAttività.Venerdi == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Venerdi)" style="width : 100%" class="btn btn-site" >Elimina</button>
+                                    <hr/>}
+                                </td>
+                                <td>@if(utenteAttività.Sabato == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Sabato)" style="width : 100%;" class="btn btn-site" >Elimina</button>
+                                    <hr/>}
+                                </td>
+                                <td>@if(utenteAttività.Domenica == true)
+                                    {
+                                    <label>Azienda: @restService.Azienda_GetByID(restService.Attività_GetByID(utenteAttività.IdAttività).IdAzienda).Nome</label>
+                                    <br>
+                                    <label>Attivita: @restService.Attività_GetByID(utenteAttività.IdAttività).Nome</label>
+                                    <br>
+                                    <label>Citta: @restService.Attività_GetByID(utenteAttività.IdAttività).Città</label>
+                                    <br>
+                                    <label>Via: @restService.Attività_GetByID(utenteAttività.IdAttività).Via</label>
+                                    <br>
+                                    <label>Orario: @restService.Attività_GetByID(utenteAttività.IdAttività).Ora</label>
+                                    <br>
+                                    <label>Tempo da impiegare: @restService.Attività_GetByID(utenteAttività.IdAttività).TempoDaImpegare min</label>
+                                    <br>
+                                    <button @onclick="() => EliminaAttivita(utenteAttività.IdAttività, Domenica)" style="width : 100%" class="btn btn-site" >Elimina</button>
+                                    <hr/>}
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br><br>
+            </div> *@
+        @*</div>
+        <br>
+    </div>
+</div>
+
+<div class="col-12" align="center">
+    <div align="center">
+        <button @onclick="() => AggiungiUtentePerAttività()" style="width : 100%" class="btn btn-site" >Aggiungi utente per attività</button>
+    </div>
+</div>
+*@
+@*
+@code {
+    private List<AziendaDTO> ListAzienda = new List<AziendaDTO>();
+    private List<UtenteDTO> ListUtenti = new List<UtenteDTO>();
+    private List<AttivitàDTO> ListAttività = new List<AttivitàDTO>();
+    private List<AttivitàDTO> ListAttivitàDaEseguire = new List<AttivitàDTO>();
+    private List<UtenteGiornoAttivitàDTO> utenteAttività = new List<UtenteGiornoAttivitàDTO>();
+    private UtenteDTO utente = new UtenteDTO();
+    private RestService restService = new RestService();
+    private UtenteGiornoAttivitàDTO attivitaUtente = new UtenteGiornoAttivitàDTO();
+    private UtenteGiornoAttivitàDTO utenteGiorno;
+    private string utenteSelezionato;
+    private AttivitàDTO attivitaSelezione = new AttivitàDTO();
+    private string giornoAttivitaDaAggingere = "";
+    private string Lunedi = "Lunedi";
+    private string Martedi = "Martedi";
+    private string Mercoledi = "Mercoledi";
+    private string Giovedi = "Giovedi";
+    private string Venerdi = "Venerdi";
+    private string Sabato = "Sabato";
+    private string Domenica = "Domenica";
+    private bool pagaExtra = false;
+    private decimal pagaSpeciale;
+    private AttivitàDTO nuovaAttivita = new AttivitàDTO();
+    private string attivitàRicerca;
+    private string utenteRicerca;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListAzienda = await restService.Azienda_GetListAsync(null);
+        ListUtenti = await restService.Utente_GetListAsync(null);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            var Result = await ProtectedSessionStore.GetAsync<int>("IdUtente");
+        }
+        catch
+        {
+            NavManager.NavigateTo("");
+        }
+    }
+
+    private async void cercaAttivita(ChangeEventArgs e)
+    {
+        attivitàRicerca = "0";
+        if(e.Value != null)
+        {
+            attivitàRicerca = e.Value.ToString();
+        }
+        ListAttivitàDaEseguire = new List<AttivitàDTO>();
+        ListAttività = await restService.Attività_List_GetByIDAzienda(int.Parse(attivitàRicerca));
+        @foreach (var attività in ListAttività)
+        {
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Lunedi == true)
+            {
+                if(attività.nPersone != (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Lunedi == true))
+                {
+                    nuovaAttivita.Lunedi = true;
+                    nuovaAttivita.Martedi = false;
+                    nuovaAttivita.Mercoledi = false;
+                    nuovaAttivita.Giovedi = false;
+                    nuovaAttivita.Venerdi = false;
+                    nuovaAttivita.Sabato = false;
+                    nuovaAttivita.Domenica = false;
+                    nuovaAttivita.nPersone = (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Martedi == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Martedi == true)
+            {
+                if (attività.nPersone == (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Martedi == true))
+                {
+                }
+                else
+                {
+                    nuovaAttivita.Lunedi = false;
+                    nuovaAttivita.Martedi = true;
+                    nuovaAttivita.Mercoledi = false;
+                    nuovaAttivita.Giovedi = false;
+                    nuovaAttivita.Venerdi = false;
+                    nuovaAttivita.Sabato = false;
+                    nuovaAttivita.Domenica = false;
+                    nuovaAttivita.nPersone = (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Martedi == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Mercoledi == true)
+            {
+                if (attività.nPersone == (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Mercoledi == true))
+                {
+                }
+                else
+                {
+                    nuovaAttivita.Lunedi = false;
+                    nuovaAttivita.Martedi = false;
+                    nuovaAttivita.Mercoledi = true;
+                    nuovaAttivita.Giovedi = false;
+                    nuovaAttivita.Venerdi = false;
+                    nuovaAttivita.Sabato = false;
+                    nuovaAttivita.Domenica = false;
+                    nuovaAttivita.nPersone = ( await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Mercoledi == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Giovedi == true)
+            {
+                if (attività.nPersone == (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Giovedi == true))
+                {
+                }
+                else
+                {
+                    nuovaAttivita.Lunedi = false;
+                    nuovaAttivita.Martedi = false;
+                    nuovaAttivita.Mercoledi = false;
+                    nuovaAttivita.Giovedi = true;
+                    nuovaAttivita.Venerdi = false;
+                    nuovaAttivita.Sabato = false;
+                    nuovaAttivita.Domenica = false;
+                    nuovaAttivita.nPersone = (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Giovedi == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Venerdi == true)
+            {
+                if (attività.nPersone == (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Venerdi == true))
+                {
+                }
+                else
+                {
+                    nuovaAttivita.Lunedi = false;
+                    nuovaAttivita.Martedi = false;
+                    nuovaAttivita.Mercoledi = false;
+                    nuovaAttivita.Giovedi = false;
+                    nuovaAttivita.Venerdi = true;
+                    nuovaAttivita.Sabato = false;
+                    nuovaAttivita.Domenica = false;
+                    nuovaAttivita.nPersone = (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Venerdi == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Sabato == true)
+            {
+                if (attività.nPersone == (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Sabato == true))
+                {
+                }
+                else
+                {
+                    nuovaAttivita.Lunedi = false;
+                    nuovaAttivita.Martedi = false;
+                    nuovaAttivita.Mercoledi = false;
+                    nuovaAttivita.Giovedi = false;
+                    nuovaAttivita.Venerdi = false;
+                    nuovaAttivita.Sabato = true;
+                    nuovaAttivita.Domenica = false;
+                    nuovaAttivita.nPersone = (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Sabato == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+            nuovoAttivitaDaEseguireGiornalmente(attività);
+            if(attività.Domenica == true)
+            {
+                if (attività.nPersone == (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Domenica == true))
+                {
+                }
+                else
+                {
+                    nuovaAttivita.Lunedi = false;
+                    nuovaAttivita.Martedi = false;
+                    nuovaAttivita.Mercoledi = false;
+                    nuovaAttivita.Giovedi = false;
+                    nuovaAttivita.Venerdi = false;
+                    nuovaAttivita.Sabato = false;
+                    nuovaAttivita.Domenica = true;
+                    nuovaAttivita.nPersone = (await restService.UtenteGiornoAttività_GetListAsync(null)).Count(x => x.IdAttività == attività.ID && x.Domenica == true);
+                    ListAttivitàDaEseguire.Add(nuovaAttivita);
+                }
+            }
+        }
+    }
+
+    private async void cercaUtente(ChangeEventArgs e)
+    {
+        UtenteGiornoAttivitàDTO utenteGiorno = new UtenteGiornoAttivitàDTO();
+        utenteRicerca = e.Value.ToString();
+        utenteAttività = await restService.UtenteGiornoAttività_List_GetByIDUtente(Convert.ToInt32(utenteRicerca));
+        utente = await restService.Utente_GetByIdAsync(Convert.ToInt32(utenteRicerca));
+    }
+
+    private void nuovoAttivitaDaEseguireGiornalmente(AttivitàDTO attività)
+    {
+        nuovaAttivita = new AttivitàDTO();
+        nuovaAttivita.Città = attività.Città;
+        nuovaAttivita.DataScadenza = attività.DataScadenza;
+        nuovaAttivita.Descrizione = attività.Descrizione;
+        nuovaAttivita.Domenica = attività.Domenica;
+        nuovaAttivita.Giovedi = attività.Giovedi;
+        nuovaAttivita.ID = attività.ID;
+        nuovaAttivita.IdAzienda = attività.IdAzienda;
+        nuovaAttivita.Lunedi = attività.Lunedi;
+        nuovaAttivita.Martedi = attività.Martedi;
+        nuovaAttivita.Mercoledi = attività.Mercoledi;
+        nuovaAttivita.Nome = attività.Nome;
+        nuovaAttivita.nPersone = attività.nPersone;
+        nuovaAttivita.Ora = attività.Ora;
+        nuovaAttivita.Sabato = attività.Sabato;
+        nuovaAttivita.TempoDaImpegare = attività.TempoDaImpegare;
+        nuovaAttivita.Venerdi = attività.Venerdi;
+        nuovaAttivita.Via = attività.Città;
+    }
+
+    private string giornoIntervento(AttivitàDTO attività)
+    {
+        string giorno = "";
+        if(attività.Lunedi == true)
+        {
+            giorno = "Lunedi";
+        }
+        if(attività.Martedi == true)
+        {
+            giorno = "Martedi";
+        }
+        if(attività.Mercoledi == true)
+        {
+            giorno = "Mercoledi";
+        }
+        if(attività.Giovedi == true)
+        {
+            giorno = "Giovedi";
+        }
+        if(attività.Venerdi == true)
+        {
+            giorno = "Venerdi";
+        }
+        if(attività.Sabato == true)
+        {
+            giorno = "Sabato";
+        }
+        if(attività.Domenica == true)
+        {
+            giorno = "Domenica";
+        }
+        return giorno;
+    }
+
+    public void SelezionaAttivita(AttivitàDTO attivita)
+    {
+        attivitaSelezione = attivita;
+        giornoAttivitaDaAggingere = giornoIntervento(attivita);
+
+    }
+
+    public void SelezionaAttivita()
+    {
+        attivitaSelezione = new AttivitàDTO();
+        giornoAttivitaDaAggingere = "";
+    }
+
+    public async void EliminaAttivita(int IdAttivita,string giorno)
+    {
+        attivitaUtente = await restService.UtenteGiornoAttività_GetByIDAttivitaAndIDUtente(IdAttivita, utente.ID);
+        if (giorno == "Lunedi")
+        {
+            attivitaUtente.Lunedi = false;
+        }
+        if (giorno == "Martedi")
+        {
+            attivitaUtente.Martedi = false;
+        }
+        if (giorno == "Mercoledi")
+        {
+            attivitaUtente.Mercoledi = false;
+        }
+        if (giorno == "Giovedi")
+        {
+            attivitaUtente.Giovedi = false;
+        }
+        if (giorno == "Venerdi")
+        {
+            attivitaUtente.Venerdi = false;
+        }
+        if (giorno == "Sabato")
+        {
+            attivitaUtente.Sabato = false;
+        }
+        if (giorno == "Domenica")
+        {
+            attivitaUtente.Domenica = false;
+        }
+
+        if (attivitaUtente.Lunedi == false && attivitaUtente.Martedi == false && attivitaUtente.Mercoledi == false && attivitaUtente.Giovedi == false && attivitaUtente.Venerdi == false && attivitaUtente.Sabato == false && attivitaUtente.Domenica == false)
+        {
+            restService.UtenteGiornoAttività_DeleteAsync(attivitaUtente.ID);
+            StateHasChanged();
+            attivitaUtente = new UtenteGiornoAttivitàDTO();
+            ChangeEventArgs passaggioIdAttività = new ChangeEventArgs();
+            passaggioIdAttività.Value = attivitàRicerca;
+            cercaAttivita(passaggioIdAttività);
+        }
+        else
+        {
+            restService.UtenteGiornoAttività_SetAsync(attivitaUtente);
+            StateHasChanged();
+            attivitaUtente = new UtenteGiornoAttivitàDTO();
+            ChangeEventArgs passaggioIdAttività = new ChangeEventArgs();
+            passaggioIdAttività.Value = attivitàRicerca;
+            cercaAttivita(passaggioIdAttività);
+        }
+    }
+
+    public async void AggiungiUtentePerAttività()
+    {
+        if (attivitaSelezione.ID != 0)
+        {
+            if ((await restService.UtenteGiornoAttività_GetListAsync(null)).Any(x => x.IdAttività == attivitaSelezione.ID && x.IdUtente == utente.ID))
+            {
+                attivitaUtente = await restService.UtenteGiornoAttività_GetByIDAttivitaAndIDUtente(attivitaSelezione.ID, utente.ID);
+
+                if(giornoAttivitaDaAggingere == "Lunedi" && attivitaUtente.Lunedi == false)
+                {
+                    attivitaUtente.Lunedi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Martedi" && attivitaUtente.Martedi == false)
+                {
+                    attivitaUtente.Martedi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Mercoledi" && attivitaUtente.Mercoledi == false)
+                {
+                    attivitaUtente.Mercoledi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Giovedi" && attivitaUtente.Giovedi == false)
+                {
+                    attivitaUtente.Giovedi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Venerdi" && attivitaUtente.Venerdi == false)
+                {
+                    attivitaUtente.Venerdi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Sabato" && attivitaUtente.Sabato == false)
+                {
+                    attivitaUtente.Sabato = true;
+                }
+                if(giornoAttivitaDaAggingere == "Domenica" && attivitaUtente.Domenica == false)
+                {
+                    attivitaUtente.Domenica = true;
+                }
+
+                restService.UtenteGiornoAttività_SetAsync(attivitaUtente);
+                ChangeEventArgs e = new ChangeEventArgs();
+                e.Value = attivitaSelezione.IdAzienda;
+                cercaAttivita(e);
+                e.Value = utenteRicerca;
+                cercaUtente(e);
+                StateHasChanged();
+                attivitaUtente = new UtenteGiornoAttivitàDTO();
+
+            }
+            else
+            {
+                attivitaUtente.IdAttività = attivitaSelezione.ID;
+            
+                if(giornoAttivitaDaAggingere == "Lunedi")
+                {
+                    attivitaUtente.Lunedi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Martedi")
+                {
+                    attivitaUtente.Martedi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Mercoledi")
+                {
+                    attivitaUtente.Mercoledi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Giovedi")
+                {
+                    attivitaUtente.Giovedi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Venerdi")
+                {
+                    attivitaUtente.Venerdi = true;
+                }
+                if(giornoAttivitaDaAggingere == "Sabato")
+                {
+                    attivitaUtente.Sabato = true;
+                }
+                if(giornoAttivitaDaAggingere == "Domenica")
+                {
+                    attivitaUtente.Domenica = true;
+                }
+
+                attivitaUtente.IdUtente = utente.ID;
+                attivitaUtente.Paga = utente.PagaOraria;
+                if (pagaExtra == true)
+                {
+                    attivitaUtente.Paga = pagaSpeciale;
+                }
+
+                restService.UtenteGiornoAttività_SetAsync(attivitaUtente);
+                ChangeEventArgs e = new ChangeEventArgs();
+                e.Value = attivitaSelezione.IdAzienda;
+                cercaAttivita(e);
+                e.Value = utenteRicerca;
+                cercaUtente(e);
+                StateHasChanged();
+                attivitaUtente = new UtenteGiornoAttivitàDTO();
+            } 
+        }
+        else
+        {
+            //messaggioPrimaCreaAttivita();
+        }
+    }
+
+} *@

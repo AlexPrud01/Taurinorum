@@ -1,0 +1,104 @@
+﻿@using Blazored.Typeahead
+@page "/FornitoreList"
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.FilterModel
+@using Taurinorum.Center.Shared.Component
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inherits BaseListPage
+
+@if (utente.Admin || SelezionaDett)
+{
+    <div class="col-10 row" style="display: flex; align-items: center;">
+        <div class="col-6">
+            <FormBase NomeCampo="Codice">
+                <InputText style="width:200px" @bind-Value="Filtro.Codice"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="Codice Fiscale" Style="margin-top: 10px;">
+                <InputText style="width:100%" @bind-Value="Filtro.CodiceFiscale"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="IDIndirizzo" Style="margin-top: 10px;">
+                <Lookup dentroFormBase="true" @bind-Value="Filtro.StrIDIndirizzo"></Lookup>
+            </FormBase>
+        </div>
+        <div class="col-6">
+            <FormBase NomeCampo="Partita Iva">
+                <InputText style="width:200px" @bind-Value="Filtro.PartitaIva"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="Codice SDI" Style="margin-top: 10px;">
+                <InputText style="width:200px" @bind-Value="Filtro.CodiceSDI"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="Descrizione" Style="margin-top: 10px;">
+                <InputText style="width:100%" @bind-Value="Filtro.Descrizione"></InputText>
+            </FormBase>
+        </div>
+    </div>
+
+    <br>
+
+    @if (ListFornitoreDTO != null)
+    {
+        <div style="overflow-y: auto; height:100%; max-height: @(Convert.ToInt32(LunghezzaModale)/100*49 + "px");">
+            <table class="table table-responsive">
+                <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                    <tr>
+                        <th style="text-align: center;">Nome</th>
+                        <th style="text-align: center;">Codice</th>
+                        <th style="text-align: center;">Descrizione</th>
+                        <th style="text-align: center;">Partita Iva</th>
+                        <th style="text-align: center;">Codice Fiscale</th>
+                        <th style="text-align: center;">CodiceSDI</th>
+                        <th style="text-align: center;">Indirizzo Codice</th>
+                        <th style="text-align: center;">Indirizzo Descrizione</th>
+                        <th style="text-align: center;">Indirizzo Via</th>
+                        <th style="text-align: center;">Indirizzo Citta</th>
+                        <th style="text-align: center;">Indirizzo Cap</th>
+                        <th style="text-align: center;">Indirizzo Provincia</th>
+                        <th style="text-align: center;">Indirizzo Nazione</th>
+                        <th style="text-align: center;">Indirizzo Regione</th>
+                        <th style="text-align: center;">Elimina</th>
+                        @if(SelezionaDett)
+                        {
+                            <th style="text-align: center;">Seleziona</th>
+                        }
+                        else
+                        {
+                            <th style="text-align: center;">Modifica</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Fornitore in ListFornitoreDTO)
+                    {
+                        <tr>
+                            <td style="text-align: center;">@Fornitore.Nome</td>
+                            <td style="text-align: center;">@Fornitore.Codice</td>
+                            <td style="text-align: center;">@Fornitore.Descrizione</td>
+                            <td style="text-align: center;">@Fornitore.PartitaIva</td>
+                            <td style="text-align: center;">@Fornitore.CodiceFiscale</td>
+                            <td style="text-align: center;">@Fornitore.CodiceSDI</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Codice</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Descrizione</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Via</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Citta</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Cap</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Provincia</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Nazione</td>
+                            <td style="text-align: center;">@Fornitore.Indirizzo_Regione</td>
+                            <td style="text-align: center;"><button @onclick="() => Elimina(Fornitore.ID)" class="btn btn-site" style="border-width:0px; background-color:white; height:auto" target="_self">Elimina</button></td>
+                            @if (SelezionaDett)
+                            {
+                                <td style="text-align: center;"><button @onclick="() => Seleziona(Fornitore.ID)" class="btn btn-site" style="border-width:0px; background-color:white; height:auto" target="_self">Seleziona</button></td>
+                            }
+                            else
+                            {
+                                <td style="text-align: center;"><button @onclick="() => Modifica(Fornitore.ID)" class="btn btn-site" style="border-width:0px; background-color:white; height:auto" target="_self">Modifica</button></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

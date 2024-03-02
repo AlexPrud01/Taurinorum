@@ -1,0 +1,102 @@
+﻿@using Blazored.Typeahead
+@page "/ClienteList"
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.FilterModel
+@using Taurinorum.Center.Shared.Component
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inherits BaseListPage
+
+@if (utente.Admin || SelezionaDett)
+{
+    <div class="col-10 row" style="display: flex; align-items: center;">
+        <div class="col-6">
+            <FormBase NomeCampo="Codice">
+                <InputText style="width:200px" @bind-Value="Filtro.Codice"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="IDIndirizzo" Style="margin-top: 10px;">
+                <Lookup dentroFormBase="true" @bind-Value="Filtro.StrIDIndirizzo"></Lookup>
+            </FormBase>
+            <FormBase NomeCampo="Denominazione" Style="margin-top: 10px;">
+                <InputText style="width:100%" @bind-Value="Filtro.Denominazione"></InputText>
+            </FormBase>
+        </div>
+        <div class="col-6">
+            <FormBase NomeCampo="Nome">
+                <InputText style="width:400px" @bind-Value="Filtro.Nome"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="Cognome" Style="margin-top: 10px;">
+                <InputText style="width:400px" @bind-Value="Filtro.Cognome"></InputText>
+            </FormBase>
+            <FormBase NomeCampo="Descrizione" Style="margin-top: 10px;">
+                <InputText style="width:100%" @bind-Value="Filtro.Descrizione"></InputText>
+            </FormBase>
+        </div>
+    </div>
+
+    <br>
+
+    @if (ListClienteDTO != null)
+    {
+        <div style="overflow-y: auto; height:100%; max-height: @(Convert.ToInt32(LunghezzaModale)/100*49 + "px");">
+            <table class="table table-responsive">
+                <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                    <tr>
+                        <th style="text-align: center;">Codice</th>
+                        <th style="text-align: center;">Descrizione</th>
+                        <th style="text-align: center;">Nome</th>
+                        <th style="text-align: center;">Cognome</th>
+                        <th style="text-align: center;">Denominazione</th>
+                        <th style="text-align: center;">Indirizzo Codice</th>
+                        <th style="text-align: center;">Indirizzo Descrizione</th>
+                        <th style="text-align: center;">Indirizzo Via</th>
+                        <th style="text-align: center;">Indirizzo Citta</th>
+                        <th style="text-align: center;">Indirizzo Cap</th>
+                        <th style="text-align: center;">Indirizzo Provincia</th>
+                        <th style="text-align: center;">Indirizzo Nazione</th>
+                        <th style="text-align: center;">Indirizzo Regione</th>
+                        <th style="text-align: center;">Elimina</th>
+                        @if(SelezionaDett)
+                        {
+                            <th style="text-align: center;">Seleziona</th>
+                        }
+                        else
+                        {
+                            <th style="text-align: center;">Modifica</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Cliente in ListClienteDTO)
+                    {
+                        <tr>
+                            <td style="text-align: center;">@Cliente.Codice</td>
+                            <td style="text-align: center;">@Cliente.Descrizione</td>
+                            <td style="text-align: center;">@Cliente.Nome</td>
+                            <td style="text-align: center;">@Cliente.Cognome</td>
+                            <td style="text-align: center;">@Cliente.Denominazione</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Codice</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Descrizione</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Via</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Citta</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Cap</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Provincia</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Nazione</td>
+                            <td style="text-align: center;">@Cliente.Indirizzo_Regione</td>
+                            <td style="text-align: center;"><button @onclick="() => Elimina(Cliente.ID)" class="btn btn-site" style="border-width:0px; background-color:white; height:auto" target="_self">Elimina</button></td>
+                            @if (SelezionaDett)
+                            {
+                                <td style="text-align: center;"><button @onclick="() => Seleziona(Cliente.ID)" class="btn btn-site" style="border-width:0px; background-color:white; height:auto" target="_self">Seleziona</button></td>
+                            }
+                            else
+                            {
+                                <td style="text-align: center;"><button @onclick="() => Modifica(Cliente.ID)" class="btn btn-site" style="border-width:0px; background-color:white; height:auto" target="_self">Modifica</button></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

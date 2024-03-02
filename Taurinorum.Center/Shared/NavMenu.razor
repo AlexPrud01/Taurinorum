@@ -1,0 +1,207 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject IJSRuntime JsRuntime
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@* <div class="ps-4 navbar navbar-dark" style="height:10%">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Account">
+                    <img style="width:100%" src="Logo.png"></a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+    <br><br>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Account" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Timbrature">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Timbrature
+            </NavLink>
+        </div> *@
+        @* @if (Admin == true)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Dipendenti">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Dipendenti
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Azienda">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Azienda
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="GestioneOrari">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Gestione orari
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="VisualizzaOrari">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Visualizza orari
+                </NavLink>
+            </div>
+        } *@
+@*         @if (utente.Admin == true)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="CompilaOre">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Compila ore
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="EmissioneOrdineDiLavoro">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Emissione Ordine Di Lavoro
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="AttivitaCeduta">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Attivita Ceduta
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            
+        }
+        <div style="position: fixed; bottom: 0;">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> 
+                    <label>Logout</label>
+                </NavLink>
+            </div>
+        </div>
+    </nav>
+</div> *@
+<ResizeHandlerWidth @bind-Value="width"></ResizeHandlerWidth>
+<nav class="row">
+    <div class="wrapper" style="width:@(((Convert.ToInt32(width)) - 70) + "px")">
+        <div class="logo">
+            <img style="width:90px" src="LogoToro.png">
+            <label for="menu-btn" style="height:100%" class="btn menu-btn"><i class="fas fa-bars"></i></label>
+        </div>
+        <input type="radio" name="slider" id="menu-btn">
+        <input type="radio" name="slider" id="close-btn">
+        <ul class="nav-links">
+            <label for="close-btn" class="btn close-btn">
+                <i class="fas fa-times">
+                    <img style="width:50px" src="left-white.png">
+                </i>
+            </label>
+            <li><a href="Account">Home</a></li>
+            <li><a href="Timbrature">Timbrature</a></li>
+            @if (utente.Admin == true)
+            {
+                <li><a href="CompilaOre">Compila ore</a></li>
+                <li><a href="EmissioneOrdineDiLavoro">Emissione Ordine Di Lavoro</a></li>
+            }
+            @* <li>
+                <a class="desktop-item">Anagrafiche</a>
+                <input type="checkbox" id="showDrop">
+                <label for="showDrop" class="mobile-item">Dropdown Menu</label>
+                <ul class="drop-menu">
+                    <li><a href="#">Drop menu 1</a></li>
+                    <li><a href="#">Drop menu 2</a></li>
+                    <li><a href="#">Drop menu 3</a></li>
+                    <li><a href="#">Drop menu 4</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="desktop-item">Mega Menu</a>
+                <input type="checkbox" id="showMega">
+                <label for="showMega" class="mobile-item">Mega Menu</label>
+                <div class="mega-box">
+                    <div class="content">
+                        <div class="row">
+                            <img src="https://fadzrinmadu.github.io/hosted-assets/responsive-mega-menu-and-dropdown-menu-using-only-html-and-css/img.jpg" alt="">
+                        </div>
+                        <div class="row">
+                            <header>Design Services</header>
+                            <ul class="mega-links">
+                                <li><a href="#">Graphics</a></li>
+                                <li><a href="#">Vectors</a></li>
+                                <li><a href="#">Business cards</a></li>
+                                <li><a href="#">Custom logo</a></li>
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <header>Email Services</header>
+                            <ul class="mega-links">
+                                <li><a href="#">Personal Email</a></li>
+                                <li><a href="#">Business Email</a></li>
+                                <li><a href="#">Mobile Email</a></li>
+                                <li><a href="#">Web Marketing</a></li>
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <header>Security services</header>
+                            <ul class="mega-links">
+                                <li><a href="#">Site Seal</a></li>
+                                <li><a href="#">VPS Hosting</a></li>
+                                <li><a href="#">Privacy Seal</a></li>
+                                <li><a href="#">Website design</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li> *@
+        </ul>
+
+    </div>
+    <div class="col" style="text-align:right">
+        <a href="#">
+            <img style="max-width:40px; max-height:40px; margin-top: 17px; margin-right: 15px;" href="#" src="logout.png">
+        </a>
+    </div>
+    
+</nav>
+
+
+
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private UtenteDTO utente = new UtenteDTO();
+    RestService restService = new RestService();
+    string width { get; set; }
+    string height { get; set; }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                if (JsRuntime != null)
+                {
+                    var Result = await ProtectedSessionStore.GetAsync<int>("IdUtente");
+
+                    if (Result.Value != 0)
+                    {
+                        utente = await restService.Utente_GetByIdAsync(Result.Value);
+                    }
+                }
+            }
+            StateHasChanged();
+        }
+        catch
+        {
+        }
+
+    }
+}

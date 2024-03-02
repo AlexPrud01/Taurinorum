@@ -1,0 +1,62 @@
+﻿@using Taurinorum.Center.Pages.EmissioneFoglio
+@using Taurinorum.Object.Enumeration
+
+<div class="modal-overlay">
+    <div class="modal-container">
+        <div class="col">
+            <button class="btn btn-site" style="width:100%; height:100%" @onclick="() => ChiudiModale(ID.ToString())">Chiudi</button>
+        </div>
+        <br>
+        <!-- Contenuto della tua pagina modale qui -->
+        @switch (PaginaApertura)
+        {
+            case EPagina.AttivitaCeduta:
+                <AttivitaCedutaList SelezionaDett="true" OnClose="ChiudiModale" />
+                break;
+            case EPagina.AttivitaCedutaDett:
+                <AttivitaCedutaDett SelezionaDett="true" ID="ID" OnClose="ChiudiModale" />
+                break;
+            case EPagina.Fornitore:
+                <FornitoreList SelezionaDett="true" OnClose="ChiudiModale" />
+                break;
+            case EPagina.FornitoreDett:
+                <FornitoreDett SelezionaDett="true" ID="ID" OnClose="ChiudiModale" />
+                break;
+            case EPagina.Cliente:
+                <ClienteList SelezionaDett="true" OnClose="ChiudiModale" />
+                break;
+            case EPagina.ClienteDett:
+                <ClienteDett SelezionaDett="true" ID="ID" OnClose="ChiudiModale" />
+                break;
+            case EPagina.Iva:
+                <IvaList SelezionaDett="true" OnClose="ChiudiModale" />
+                break;
+            case EPagina.IvaDett:
+                <IvaDett SelezionaDett="true" ID="ID" OnClose="ChiudiModale" />
+                break;
+            case EPagina.ModalitaPagamento:
+                <ModalitaPagamentoList SelezionaDett="true" OnClose="ChiudiModale" />
+                break;
+            case EPagina.ModalitaPagamentoDett:
+                <ModalitaPagamentoDett SelezionaDett="true" ID="ID" OnClose="ChiudiModale" />
+                break;
+        }
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter] public EPagina PaginaApertura { get; set; } = EPagina.Generica;
+    [Parameter] public EventCallback<string> OnClose { get; set; }
+    [Parameter] public int ID { get; set; }
+    [Inject] IJSRuntime JsRuntime { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+    public async Task ChiudiModale(string ID)
+    {
+        OnClose.InvokeAsync(ID);
+    }
+}

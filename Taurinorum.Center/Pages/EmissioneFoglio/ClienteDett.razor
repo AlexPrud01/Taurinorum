@@ -1,0 +1,41 @@
+﻿@using Blazored.Typeahead
+@page "/ClienteDett"
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.FilterModel
+@using Taurinorum.Center.Shared.Component
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inherits BaseDettPage
+
+<PageTitle>Attivita Ceduta</PageTitle>
+@if (utente.Admin || SelezionaDett)
+{
+    <div class="row" style="display: flex; align-items: center;">
+        <div>
+            <FormBase NomeCampo="Codice" Style="margin-top: 10px;">
+                <InputText style="width:200px" @bind-Value="Dettaglio.Codice"></InputText>
+            </FormBase>
+            <br>
+            <FormBase NomeCampo="IDIndirizzo">
+                <Lookup dentroFormBase="true" @bind-Value="Dettaglio.StrIDIndirizzo"></Lookup>
+            </FormBase>
+            <br>
+            <FormBase NomeCampo="Denominazione">
+                <InputText style="width:200px" @bind-Value="Dettaglio.Denominazione"></InputText>
+            </FormBase>
+            <br>
+            <FormBase NomeCampo="Nome">
+                <InputText style="width:200px" @bind-Value="Dettaglio.Nome"></InputText>
+            </FormBase>
+            <br>
+            <FormBase NomeCampo="Cognome">
+                <InputText style="width:200px" @bind-Value="Dettaglio.Cognome"></InputText>
+            </FormBase>
+            <br>
+            <FormBase NomeCampo="Descrizione">
+                <InputTextArea style="width:600px" @bind-Value="Dettaglio.Descrizione"></InputTextArea>
+            </FormBase>
+        </div>
+    </div>
+}

@@ -1,0 +1,240 @@
+﻿@* @page "/DettaglioAzienda"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IJSRuntime JsRuntime
+@inject IWebHostEnvironment Environmen
+
+<div class="row" align="left">
+    <div class="col-12" align="left">
+        <h3>Azienda</h3>
+        <br>
+    </div>
+    <div class="col-4" align="left">
+        <h5>Azienda</h5>
+        <br>
+    </div>
+    <div class="col-8" align="right">
+        <button onclick="@Salva" style="width : 40%" class="btn btn-site" >Salva</button>
+        <br>
+    </div>
+    <hr/>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Nome:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="azienda.Nome" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Referente:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="azienda.Referente" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Numero telefono:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="azienda.NumTelefono" style="width:75%" />
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Referente 2:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="azienda.Referente2" style="width:75%"/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3">
+                <label>
+                    Numero telefono 2:
+                </label>
+            </div>
+            <div class="col-6">
+                <input @bind-value="azienda.NumTelefono2" style="width:75%" />
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
+
+    <div class="col-4" align="left">
+        <h5>Attività</h5>
+        <br>
+    </div>
+    <div class="col-8" align="right">
+        <button @onclick="() => DettaglioAttività(0)" style="width : 40%" class="btn btn-site" >Nuova Attività</button>
+        <br>
+    </div>
+    <hr/>
+    
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Descrizione</th>
+                <th>Giorno</th>
+                <th>Orario</th>
+                <th>Tempo da impegare</th>
+                <th>Data scadenza</th>
+                <th>N° Persone</th>
+                <th>Città</th>
+                <th>Via</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attivitaSelezionata in listAttivita)
+            {
+                <tr>
+                    <td><a @onclick="() => DettaglioAttività(attivitaSelezionata.ID)" class="scritteRosse" target="_self">Modifica</a></td>
+                    <td>@attivitaSelezionata.Descrizione</td>
+                    <td>@personalizzaGiorniAttivita(attivitaSelezionata)</td>
+                    <td>@attivitaSelezionata.Ora</td>
+                    <td>@attivitaSelezionata.TempoDaImpegare</td>
+                    <td>@attivitaSelezionata.DataScadenza</td>
+                    <td>@attivitaSelezionata.nPersone</td>
+                    <td>@attivitaSelezionata.Città</td>
+                    <td>@attivitaSelezionata.Via</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+    
+
+@code {
+
+    private AziendaDTO azienda = new AziendaDTO();
+    private AttivitàDTO attività = new AttivitàDTO();
+    private RestService restService = new RestService();
+    private List<AttivitàDTO> listAttivita = new List<AttivitàDTO>();
+    private string utenteAttivitaGiorno;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ResultUtente = await ProtectedSessionStore.GetAsync<int>("IdUtente");
+        var Result = await ProtectedSessionStore.GetAsync<int>("IdAzienda");
+        if (Result.Value != 0)
+        {
+            azienda = await restService.Azienda_GetByIdAsync(Result.Value);
+            listAttivita = await restService.Attività_List_GetByIDAzienda(azienda.ID);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            var Result = await ProtectedSessionStore.GetAsync<int>("IdUtente");
+        }
+        catch
+        {
+            NavManager.NavigateTo("");
+        }
+    }
+
+    public void Salva()
+    {
+        try
+        {
+            restService.Azienda_SetAsync(azienda);
+            messaggioAziendaSalvata();
+        }
+        catch
+        {
+            messaggioAziendaNonSalvata();
+
+        }
+        
+    }
+    
+    public string personalizzaGiorniAttivita(AttivitàDTO utenteGiornoAttivita)
+    {
+
+        if(utenteGiornoAttivita.Lunedi == true)
+        {
+            utenteAttivitaGiorno = "Lun ";
+        }
+        if(utenteGiornoAttivita.Martedi == true)
+        {
+            utenteAttivitaGiorno += "Mar ";
+        }
+        if(utenteGiornoAttivita.Mercoledi == true)
+        {
+            utenteAttivitaGiorno += "Mer ";
+        }
+        if(utenteGiornoAttivita.Giovedi == true)
+        {
+            utenteAttivitaGiorno += "Gio ";
+        }
+        if(utenteGiornoAttivita.Venerdi == true)
+        {
+            utenteAttivitaGiorno += "Ven ";
+        }
+        if(utenteGiornoAttivita.Sabato == true)
+        {
+            utenteAttivitaGiorno += "Sab ";
+        }
+        if(utenteGiornoAttivita.Domenica == true)
+        {
+            utenteAttivitaGiorno += "Dom ";
+        }
+        return utenteAttivitaGiorno;
+    }
+
+    public void DettaglioAttività(int IdAttivita)
+    {
+        if (azienda.ID != 0)
+        {
+            PassaggioID(IdAttivita);
+            NavManager.NavigateTo("/DettaglioAttività");
+        }
+        else
+        {
+            messaggioPrimaAggiungiAzienda();
+        }
+    }
+    
+    private async Task messaggioPrimaAggiungiAzienda()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Prima devi creare una azienda, OK"); 
+    }
+    
+    private async Task messaggioAziendaSalvata()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Azienda salvata, OK"); 
+    }
+    
+    private async Task messaggioAziendaNonSalvata()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Azienda non salvata, OK"); 
+    }
+
+    private async Task PassaggioID(int ID)
+    {
+        await ProtectedSessionStore.SetAsync("IdAttivita", ID);
+    }
+
+} *@

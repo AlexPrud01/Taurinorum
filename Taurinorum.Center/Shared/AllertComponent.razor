@@ -1,0 +1,38 @@
+﻿@using Taurinorum.Object
+<div class="col-12 row" style=" border-radius:40px; background-color:@Color">
+    <label>@Evento : @allert.Messaggio</label>
+</div>
+@code {
+
+    [Parameter]
+    public Allert allert { get; set; }
+
+    public string Evento { get; set; }
+
+    public string Color { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (allert != null)
+        {
+            if (allert.Valore == 0)
+            {
+                Color = "red";
+                Evento = "Errore";
+            }
+            else if (allert.Valore >= 1)
+            {
+                Color = "green";
+                Evento = "Successo";
+            }
+            else
+            {
+                Color = "yellow";
+                Evento = "Attenzione";
+
+            }
+            StateHasChanged();
+        }
+    }
+
+}

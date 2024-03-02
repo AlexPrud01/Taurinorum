@@ -1,0 +1,33 @@
+﻿@using Blazored.Typeahead
+@page "/EmissioneOrdineDiLavoro"
+@using Taurinorum.Center.Shared.Component
+@using Taurinorum.Object.DataTrasportObject
+@using PdfSharp.Pdf;
+@using PdfSharp.Pdf.AcroForms;
+@using Taurinorum.Object.FilterModel
+@using Taurinorum.Object.Enumeration
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<PageTitle>Emissione Ordine Di Lavoro</PageTitle>
+<div class="row">
+    <div class="col-9">
+        <h1>Emissione Ordine Di Lavoro</h1>
+    </div>
+    <div class="col">
+        <button class="btn btn-site" style="width:100%; height:100%" onclick="@Stampa">Stampa</button>
+    </div>
+</div>
+<br>
+@if (utente.Admin)
+{
+    <br>
+    <div class="col-6 row">
+        <Lookup Pagina="EPagina.AttivitaCeduta" @bind-Value="emissioneFoglioDiLavoroDTO.StrIDAttivita"></Lookup>
+        <Lookup Pagina="EPagina.Fornitore" @bind-Value="emissioneFoglioDiLavoroDTO.StrIDFornitore"></Lookup>
+        <Lookup Pagina="EPagina.Cliente" @bind-Value="emissioneFoglioDiLavoroDTO.StrIDCliente"></Lookup>
+        <Lookup Pagina="EPagina.Iva" @bind-Value="emissioneFoglioDiLavoroDTO.StrIDIva"></Lookup>
+        <Lookup Pagina="EPagina.ModalitaPagamento" @bind-Value="emissioneFoglioDiLavoroDTO.StrIDModalitaPagamento"></Lookup>
+    </div>
+}

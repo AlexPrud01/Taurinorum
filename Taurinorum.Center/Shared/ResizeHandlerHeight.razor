@@ -1,0 +1,29 @@
+﻿@page "/resize-handler-height"
+@inherits InputBase<string>
+@inject IJSRuntime JSRuntime
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // Registra il gestore di ridimensionamento quando il componente viene inizializzato
+        JSRuntime.InvokeVoidAsync("registerResizeHandler", DotNetObjectReference.Create(this));
+    }
+
+    [JSInvokable]
+    public async Task HandleResize(int width, int height)
+    {
+        CurrentValue = height.ToString();
+        StateHasChanged();
+    }
+
+    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}
+

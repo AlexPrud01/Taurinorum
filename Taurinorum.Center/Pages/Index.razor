@@ -1,0 +1,86 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Taurinorum.Object.DataTrasportObject
+@using Taurinorum.Object.FilterModel
+@layout BlanckPages
+@inject NavigationManager NavManager
+@inject IJSRuntime JsRuntime
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+
+<div class="row">
+    <div class="col-3"></div>
+    <div align="center" class="col-6">
+        <img src="Logo.png">
+        <div align="center" class="card">
+            <h1 class="card-header" >Utente</h1>
+            <div class="card-body">
+                <label class="col-form-label col-form-label-sm">Username:</label>
+                <input type="text" style="width: 100%;" id="tbUtenteNome" @bind-value="utenteFiltro.Username" name="tbUtenteNome">
+                <br>
+                <br>
+                <label class="col-form-label col-form-label-sm">Password:</label>
+                <input type="text" style="width: 100%;" id="tbUtentePassword" @bind-value="utenteFiltro.Password" name="tbUtentePassword">
+                <br><br>
+                <button onclick="@Accedi" class="btn btn-site">Accedi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private UtenteFM utenteFiltro;
+    private RestService restService = new RestService();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        utenteFiltro = new UtenteFM();
+        PassaggioUtenteVuoto(0); 
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        utenteFiltro = new UtenteFM() { Username = "Alessandro", Password = "Alexander-11" };
+        await Accedi();
+    }
+
+    private async Task Accedi()
+    {
+        UtenteDTO utente = await restService.Utente_GetByUserAndPasswordAsync(utenteFiltro);
+        if (utente != null && utente.ID != null && utente.ID != 0)
+        {
+            await PassaggioID((int)utente.ID);
+            NavManager.NavigateTo("/Account");
+        }
+        else
+        {
+            AccessoNonRiuscito();
+        }
+    }
+
+    private async Task AccessoNonRiuscito()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Accesso non riuscito"); 
+    }
+
+    private async Task PassaggioID(int id)
+    {
+        await ProtectedSessionStore.SetAsync("IdUtente", id);
+    }
+
+    private async Task PassaggioUtenteVuoto(int id)
+    {
+        try
+        {
+            await ProtectedSessionStore.DeleteAsync("IdUtente");
+            await ProtectedSessionStore.SetAsync("IdUtente", id);
+        }
+        catch(Exception ex)
+        {
+            
+        }
+    }
+
+}

@@ -1,0 +1,14 @@
+﻿<div class="row col-12" style="@Style">
+    <label style="width:@WidthScritta">@NomeCampo</label>
+    <div class="col">@ChildContent</div>
+</div>
+@code {
+    [Parameter]
+    public string WidthScritta { get; set; } = "150px";
+    [Parameter]
+    public string NomeCampo { get; set; } = "";
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public string Style { get; set; } = "";
+}
